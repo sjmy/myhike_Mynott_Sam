@@ -8,6 +8,10 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 
+// Find the day of the week to get the daily quote
+const d = (date = new Date()) =>
+  date.toLocaleDateString("en-US", { weekday: "long" }).toLowerCase();
+
 // Function to fetch the signed-in user's name and display it in the UI
 function showName() {
   // Get the DOM element where the user's name will be displayed
@@ -146,6 +150,9 @@ async function displayCardsDynamically() {
 
       // Set the image source
       newcard.querySelector(".card-image").src = `./images/${hike.code}.jpg`;
+      // Add the link with the document ID
+      newcard.querySelector(".read-more").href =
+        `eachHike.html?docID=${doc.id}`;
 
       // Attach the new card to the container
       document.getElementById("hikes-go-here").appendChild(newcard);
@@ -158,5 +165,7 @@ async function displayCardsDynamically() {
 // Call the function to display cards when the page loads
 displayCardsDynamically();
 
-readQuote("tuesday");
 showName();
+
+// Daily quote
+readQuote(d(new Date()));
