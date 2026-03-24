@@ -34,6 +34,7 @@ function showName() {
     // Get the user's Firestore document from the "users" collection
     // Document ID is the user's unique UID
     const userDoc = await getDoc(doc(db, "users", user.uid));
+    const userData = userDoc.data();
 
     // Determine which name to display:
     const name = userDoc.exists() // 1️⃣ Use Firestore name if document exists
@@ -46,7 +47,7 @@ function showName() {
     }
 
     //Read bookmarks as a plain array (no globals)
-    const bookmarks = userDoc.bookmarks || [];
+    const bookmarks = userData.bookmarks || [];
 
     //Display cards, but now pass user's ID and bookmarks (array)
     await displayCardsDynamically(user.uid, bookmarks);
