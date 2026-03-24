@@ -1,11 +1,16 @@
 import { onAuthReady } from "./authentication.js";
 import { db } from "./firebaseConfig.js";
-import { doc, onSnapshot, getDoc } from "firebase/firestore";
 import {
+  doc,
+  onSnapshot,
+  getDoc,
   collection,
   getDocs,
   addDoc,
   serverTimestamp,
+  updateDoc,
+  arrayUnion,
+  arrayRemove,
 } from "firebase/firestore";
 
 // Find the day of the week to get the daily quote
@@ -39,6 +44,12 @@ function showName() {
     if (nameElement) {
       nameElement.textContent = `${name}!`;
     }
+
+    //Read bookmarks as a plain array (no globals)
+    const bookmarks = userDoc.bookmarks || [];
+
+    //Display cards, but now pass user's ID and bookmarks (array)
+    await displayCardsDynamically(user.uid, bookmarks);
   });
 }
 
@@ -130,7 +141,7 @@ async function seedHikes() {
 // Call the seeding function when the main.html page loads.
 seedHikes();
 
-async function displayCardsDynamically() {
+async function displayCardsDynamically(userId, bookmarks) {
   let cardTemplate = document.getElementById("hikeCardTemplate");
   const hikesCollectionRef = collection(db, "hikes");
 
@@ -154,6 +165,21 @@ async function displayCardsDynamically() {
       newcard.querySelector(".read-more").href =
         `eachHike.html?docID=${doc.id}`;
 
+      const hikeDocID = doc.id;
+      const icon = newcard.querySelector("i.material-icons");
+
+      // Give this icon a unique id based on the hike ID
+      icon.id = "save-" + hikeDocID;
+
+      // Decide initial state from bookmarks array
+      const isBookmarked = bookmarks.includes(hikeDocID);
+
+      // Set initial bookmark icon based on whether this hike is already in the user's bookmarks
+      icon.innerText = isBookmarked ? "bookmark" : "bookmark_border";
+
+      // On click, call a toggleBookmark
+      icon.onclick = () => toggleBookmark(userId, hikeDocID);
+
       // Attach the new card to the container
       document.getElementById("hikes-go-here").appendChild(newcard);
     });
@@ -162,8 +188,36 @@ async function displayCardsDynamically() {
   }
 }
 
-// Call the function to display cards when the page loads
-displayCardsDynamically();
+async function toggleBookmark(userId, hikeDocID) {
+  const userRef = doc(db, "users", userId); // get a pointer to the user's document
+  const userSnap = await getDoc(userRef); // read the user's document one time
+  const userData = userSnap.data() || {}; // default to empty user data
+  const bookmarks = userData.bookmarks || []; // default to empty bookmarks array
+
+  const iconId = "save-" + hikeDocID; // construct icon's unique ID given the hike ID
+  const icon = document.getElementById(iconId); // get a pointer to icon DOM
+
+  // JS function ".includes" will return true if an item is found in the array
+  const isBookmarked = bookmarks.includes(hikeDocID);
+
+  // Because this block of code as two aynchronous calls that can be risky/fail
+  // Here's an example of how to wrap it with a try/catch structure for error handling.
+  try {
+    if (isBookmarked) {
+      // Remove from Firestore array
+      await updateDoc(userRef, { bookmarks: arrayRemove(hikeDocID) });
+      // Update the bookmark icon DOM
+      icon.innerText = "bookmark_border";
+    } else {
+      // Add to Firestore array
+      await updateDoc(userRef, { bookmarks: arrayUnion(hikeDocID) });
+      // Update the bookmark icon DOM
+      icon.innerText = "bookmark";
+    }
+  } catch (err) {
+    console.error("Error toggling bookmark:", err);
+  }
+}
 
 showName();
 
