@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>My BCIT Project</title>
+    <meta name="comp1800 template" content="My 1800 App" />
+
+    <!-- Required meta tags -->
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- Web Components for shared navbar and footer layout -->
+    <script type="module" crossorigin src="/assets/profile-BwHmgXbq.js"></script>
+    <link rel="modulepreload" crossorigin href="/assets/app-iD2SOhKG.js">
+    <link rel="stylesheet" crossorigin href="/assets/app-uqEcXm_W.css">
+  </head>
+
+  <body>
+    <!------------------------------>
+    <!-- Your HTML Layout go here -->
+    <!------------------------------>
+
+    <!-- our own navbar goes here -->
+    <site-navbar></site-navbar>
+
+    <!-- Main content goes here -->
+    <main>
+      <div class="container">
+        <h1 class="pt-4">User Profile</h1>
+        <form>
+          <fieldset class="mb-3" id="personalInfoFields" disabled>
+            <div class="form-group pb-3">
+              <label>Name</label>
+              <input
+                type="text"
+                id="nameInput"
+                class="form-control"
+                placeholder="Enter your name"
+              />
+            </div>
+            <div class="form-group pb-3">
+              <label>School</label>
+              <input
+                type="text"
+                id="schoolInput"
+                class="form-control"
+                placeholder="Enter your school"
+              />
+            </div>
+            <div class="form-group pb-3">
+              <label>City</label>
+              <input
+                type="text"
+                id="cityInput"
+                class="form-control"
+                placeholder="Enter your city"
+              />
+            </div>
+          </fieldset>
+          <div class="d-flex justify-content-end mt-5">
+            <button id="editButton" type="button" class="btn btn-secondary">
+              Edit
+            </button>
+            <span style="width: 10px"></span>
+            <button id="saveButton" type="button" class="btn btn-success">
+              Save
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <div class="container">
+        <h1 class="pt-4">Saved Hikes</h1>
+        <div id="hikeCardGroup" class="row row-cols-auto"></div>
+      </div>
+
+      <template id="savedCardTemplate">
+        <div class="card py-2 m-2 bg-light" style="width: 16rem">
+          <img class="card-image card-img-top" src="..." alt="Hike image" />
+          <div class="card-body">
+            <h5 class="card-title">Card title</h5>
+            <p class="card-text"></p>
+            <p>Length: <span class="card-length"></span> km</p>
+            <a class="btn btn-success read-more" href="#">Read More</a>
+          </div>
+        </div>
+      </template>
+    </main>
+
+    <!-- our own footer goes here -->
+    <site-footer></site-footer>
+
+    <!---------------------------------------------->
+    <!-- Your own JavaScript scripts go here      -->
+    <!---------------------------------------------->
+
+  </body>
+</html>
